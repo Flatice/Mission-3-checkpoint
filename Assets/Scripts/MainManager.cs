@@ -55,6 +55,13 @@ public class MainManager : MonoBehaviour
         }
         else if (m_GameOver)
         {
+            if (m_Points > GameManager.Instance.bestScore)
+            {
+                GameManager.Instance.bestScore = m_Points;
+                GameManager.Instance.bestPlayerName = GameManager.Instance.currentPlayerName;
+                GameManager.Instance.SaveGame();  // in this case the game doesn't need to save information when there isn't a new best score, in otehr games I should put this outsife of the if condition
+            }
+
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);

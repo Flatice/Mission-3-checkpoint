@@ -1,11 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
 using UnityEngine.UI;
-
-
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -17,6 +16,8 @@ public class GameManager : MonoBehaviour
     public string currentPlayerName, bestPlayerName;
     public int bestScore = 0;
 
+    private string savePath;
+
     private void Awake()
     {
         if (Instance != null)
@@ -27,6 +28,9 @@ public class GameManager : MonoBehaviour
 
         Instance = this;
         DontDestroyOnLoad(gameObject);
+
+        savePath = Application.persistentDataPath + "/savefile.json";
+        LoadGame();
     }
 
     public void Initialize()
@@ -53,5 +57,31 @@ public class GameManager : MonoBehaviour
     #else
         Application.Quit();
     #endif
+    }
+
+    class SaveData
+    {
+        public string name;
+        public int score;
+    }
+
+    public void SaveGame()
+    {
+        SaveData data = new SaveData();
+        data.name = bestPlayerName;
+        data.score = bestScore;
+
+        File.WriteAllText(savePath, JsonUtility.ToJson(data));
+    }
+
+    public void LoadGame()
+    {
+        if (File.Exists(savePath))
+        {
+            SaveData data = JsonUtility.FromJson<SaveData>(File.ReadAllText(savePath));
+
+            bestPlayerName = data.name;
+            bestScore = data.score;
+        }
     }
 }
